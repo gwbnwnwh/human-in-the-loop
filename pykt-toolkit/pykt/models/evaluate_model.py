@@ -197,9 +197,9 @@ def evaluate(model, test_loader, model_name, rel, save_path=""):
             # losses.append(valid_loss.detach().cpu().numpy())
 
             # save predict result
-            # if save_path != "":
-            #     result = save_cur_predict_result(dres, c, r, cshft, rshft, m, sm, y)
-            #     fout.write(result+"\n")
+            if save_path != "":
+                result = save_cur_predict_result(dres, c, r, cshft, rshft, m, sm, y)
+                fout.write(result+"\n")
 
             y = torch.masked_select(y, sm).detach().cpu()
             # print(f"pred_results:{y}")  
@@ -215,11 +215,10 @@ def evaluate(model, test_loader, model_name, rel, save_path=""):
 
         prelabels = [1 if p >= 0.5 else 0 for p in ps]
         acc = metrics.accuracy_score(ts, prelabels)
-        loss_mean = 0.0
-        # loss_mean = np.mean(losses)
+        
     # if save_path != "":
     #     pd.to_pickle(dres, save_path+".pkl")
-    return auc, acc, loss_mean
+    return auc, acc
 
 def early_fusion(curhs, model, model_name):
     if model_name in ["dkvmn","skvmn"]:

@@ -106,7 +106,16 @@ def init_model(model_name, model_config, data_config, emb_type):
     elif model_name == "sparsekt":
         model = sparseKT(data_config["num_c"], data_config["num_q"], **model_config, emb_type=emb_type, emb_path=data_config["emb_path"]).to(device)
     elif model_name == "rkt":
-        model = RKT(data_config["num_c"], data_config["num_q"], **model_config, emb_type=emb_type, emb_path=data_config["emb_path"]).to(device)          
+        model = RKT(data_config["num_c"], data_config["num_q"], **model_config, emb_type=emb_type, emb_path=data_config["emb_path"]).to(device)
+    elif model_name == "rakt":
+        from .rakt import RAKT
+        qmatrix_path = os.path.join(data_config["dpath"], "qmatrix.npz")
+        if os.path.exists(qmatrix_path):
+            q_matrix = np.load(qmatrix_path, allow_pickle=True)['matrix']
+        else:
+            q_matrix = generate_qmatrix(data_config)
+        q_matrix = torch.tensor(q_matrix).float().to(device)
+        model = RAKT(data_config["num_c"], data_config["num_q"], **model_config, q_matrix=q_matrix, emb_type=emb_type, emb_path=data_config["emb_path"]).to(device)             
     else:
         print("The wrong model name was used...")
         return None

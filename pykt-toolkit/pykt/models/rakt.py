@@ -107,7 +107,6 @@ class RAKT(nn.Module):
         self.beta = beta
         self.q_matrix = q_matrix
         
-        print("RAKT change QKT" + "\n")
         
         if num_q <= 0:
             self.que_embeds = nn.Embedding(num_c + 1, embed_size , padding_idx=0)

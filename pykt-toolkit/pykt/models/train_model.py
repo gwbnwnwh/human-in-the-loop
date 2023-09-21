@@ -33,7 +33,7 @@ def cal_loss(model, ys, r, rshft, sm, preloss=[]):
         else:
             loss = loss1
 
-    elif model_name in ["rakt", "rkt", "rkt_paper", "rkt_abl", "dimkt","dkt", "dkt_forget", "dkvmn","deep_irt", "kqn", "sakt", "saint", "atkt", "atktfix", "gkt", "skvmn", "hawkes"]:
+    elif model_name in ["rakt", "rkt", "dimkt","dkt", "dkt_forget", "dkvmn","deep_irt", "kqn", "sakt", "saint", "atkt", "atktfix", "gkt", "skvmn", "hawkes"]:
         #print(ys[0].shape, sm.shape)
         y = torch.masked_select(ys[0], sm)
         t = torch.masked_select(rshft, sm)
@@ -89,7 +89,7 @@ def model_forward(model, data, rel=None):
     if model_name in ["hawkes"]:
         ct = torch.cat((t[:,0:1], tshft), dim=1)
     # training process    
-    if model_name in ["rkt","rkt_paper","rkt_abl"]:
+    if model_name in ["rkt"]:
         y, attn = model(dcur, rel, train=True)
         ys.append(y[:,1:])
         loss = cal_loss(model, ys, r, rshft, sm, preloss)
@@ -181,12 +181,12 @@ def model_forward(model, data, rel=None):
     return loss
     
 
-def train_model(model, train_loader, valid_loader, num_epochs, opt, ckpt_path, data_config, fold, test_loader=None, test_window_loader=None, save_model=False):
+def train_model(model, train_loader, valid_loader, num_epochs, opt, ckpt_path, test_loader=None, test_window_loader=None, save_model=False, data_config=None, fold=None):
     max_auc, best_epoch = 0, -1
     train_step = 0
 
     rel = None
-    if model.model_name in ["rkt", "rkt_abl", "bakt_time2", "qikt"]:
+    if model.model_name in ["rkt"]:
         dpath = data_config["dpath"]
         dataset_name = dpath.split("/")[-1]
         tmp_folds = set(data_config["folds"]) - {fold}
